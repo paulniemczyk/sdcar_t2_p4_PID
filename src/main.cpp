@@ -28,12 +28,25 @@ std::string hasData(std::string s) {
   return "";
 }
 
-int main()
+int main(int argc, char* argv[])
 {
   uWS::Hub h;
 
   PID pid;
   // TODO: Initialize the pid variable.
+
+  /***** My Code *****/
+
+  //double init_Kp = atof(argv[1]);      // Sets how hard to steer back to center of road
+  //double init_Ki = atof(argv[2]);         // Deals with consistency, as if wheels are slightly out of alignment
+  //double init_Kd = atof(argv[3]);         // Dampens oscillation around center line
+  double init_Kp = -0.1;
+  double init_Ki = 0;
+  double init_Kd = -2.0;
+  pid.Init(init_Kp, init_Ki, init_Kd); 
+  
+  /***** End My Code *****/
+
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -58,6 +71,14 @@ int main()
           * another PID controller to control the speed!
           */
           
+          /***** My Code *****/
+          
+          pid.UpdateError(cte);
+          steer_value = pid.TotalError();
+
+          /***** End My Code *****/
+
+
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
